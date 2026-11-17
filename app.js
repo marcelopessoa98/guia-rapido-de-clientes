@@ -84,6 +84,16 @@
     return state.clients[clientId]?.nome || "Cliente não encontrado";
   }
 
+  function displayValue(value) {
+    const text = String(value ?? "").trim();
+    return text ? escapeHtml(text) : '<span class="not-informed">Não informado</span>';
+  }
+
+  function formatDate(timestamp) {
+    if (!Number(timestamp)) return '<span class="not-informed">Não informado</span>';
+    return escapeHtml(new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(timestamp)));
+  }
+
   function render() {
     const query = normalize($("searchInput").value);
     const filter = $("statusFilter").value;
@@ -98,13 +108,32 @@
     $("resultsBody").innerHTML = visible.map((work) => {
       const references = parseReferences(work.referencia);
       const active = work.situacao === "ANDAMENTO";
-      return `<tr>
-        <td><div class="reference-list">${references.map((ref) => `<span class="reference">${escapeHtml(ref)}</span>`).join("")}</div></td>
-        <td class="primary-cell">${escapeHtml(clientName(work.clienteId))}</td>
-        <td class="secondary-cell">${escapeHtml(work.nome)}</td>
-        <td><span class="status ${active ? "" : "status--inactive"}">${active ? "Em andamento" : "Finalizada"}</span></td>
-        <td>${state.profile?.role === "LEITOR" ? "" : `<div class="row-actions"><button class="row-button" data-edit="${work.id}">Editar</button><button class="row-button row-button--delete" data-delete="${work.id}">Excluir</button></div>`}</td>
-      </tr>`;
+      const actions = state.profile?.role === "LEITOR" ? "" : `<div class="card-actions"><button class="row-button" data-edit="${work.id}">Editar</button><button class="row-button row-button--delete" data-delete="${work.id}">Excluir</button></div>`;
+      return `<article class="client-card">
+        <header class="client-card__header">
+          <div class="client-card__heading">
+            <div class="reference-list" aria-label="Referências">${references.map((ref) => `<span class="reference">${escapeHtml(ref)}</span>`).join("")}</div>
+            <span class="status ${active ? "" : "status--inactive"}">${active ? "Em andamento" : "Finalizada"}</span>
+          </div>
+          ${actions}
+        </header>
+        <div class="client-card__identity">
+          <div><span>Cliente</span><strong>${displayValue(clientName(work.clienteId))}</strong></div>
+          <div><span>Obra</span><strong>${displayValue(work.nome)}</strong></div>
+        </div>
+        <dl class="client-card__details">
+          <div><dt>Filial</dt><dd>${displayValue(work.filial === "MARANHAO" ? "Maranhão" : work.filial === "FORTALEZA" ? "Fortaleza" : work.filial)}</dd></div>
+          <div><dt>Contato do cliente</dt><dd>${displayValue(work.contatoCliente)}</dd></div>
+          <div class="detail-wide"><dt>Endereço</dt><dd>${displayValue(work.endereco)}</dd></div>
+          <div><dt>Funcionário fixo</dt><dd>${displayValue(work.funcionarioFixo)}</dd></div>
+          <div><dt>Tipo de laboratório</dt><dd>${displayValue(work.tipoLaboratorio)}</dd></div>
+          <div><dt>Tamanho do corpo de prova</dt><dd>${displayValue(work.tamanhoCp)}</dd></div>
+          <div><dt>Tipo de corpo de prova</dt><dd>${displayValue(work.tipoCp)}</dd></div>
+          <div><dt>ID da prensa</dt><dd>${displayValue(work.idPrensa)}</dd></div>
+          <div><dt>Última atualização</dt><dd>${formatDate(work.updatedAt)}</dd></div>
+          <div class="detail-wide"><dt>Observações</dt><dd class="observations">${displayValue(work.observacoes)}</dd></div>
+        </dl>
+      </article>`;
     }).join("");
     $("emptyState").hidden = visible.length > 0;
     $("resultSummary").textContent = `${visible.length} ${visible.length === 1 ? "obra encontrada" : "obras encontradas"}`;

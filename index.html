@@ -2,9 +2,9 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#b41620"><meta name="description" content="Cadastro e consulta de clientes, obras e referências da Concrefuji.">
-  <link rel="icon" type="image/png" href="assets/favicon.png"><link rel="apple-touch-icon" href="assets/favicon.png">
-  <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="login.css"><title>Guia de clientes | Concrefuji</title>
+  <meta name="theme-color" content="#b41620"><meta name="description" content="Cadastro e consulta de clientes, obras e referências da Concrefuji."><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Guia de clientes">
+  <link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="assets/favicon.png"><link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="cards.css"><link rel="stylesheet" href="login.css"><title>Guia de clientes | Concrefuji</title>
 </head>
 <body>
   <section class="login-screen" id="loginScreen">
@@ -28,7 +28,7 @@
     <section class="panel">
       <div class="toolbar"><label class="search"><svg viewBox="0 0 24 24"><path d="m21 21-4.35-4.35m2.35-5.65a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"/></svg><input id="searchInput" type="search" placeholder="Buscar por referência, cliente ou obra"></label><select id="statusFilter" aria-label="Filtrar situação"><option value="all">Todas as situações</option><option value="active">Somente ativas</option><option value="inactive">Somente inativas</option></select></div>
       <div class="result-summary" id="resultSummary">Carregando cadastros...</div>
-      <div class="table-wrap"><table><thead><tr><th>Referência</th><th>Cliente</th><th>Obra</th><th>Situação</th><th></th></tr></thead><tbody id="resultsBody"></tbody></table><div class="empty-state" id="emptyState" hidden><b>⌕</b><h2>Nenhum cadastro encontrado</h2><p>Ajuste a pesquisa ou cadastre uma nova obra.</p></div></div>
+      <div class="client-cards" id="resultsBody" aria-live="polite"></div><div class="empty-state" id="emptyState" hidden><b>⌕</b><h2>Nenhum cadastro encontrado</h2><p>Ajuste a pesquisa ou cadastre uma nova obra.</p></div>
     </section>
   </main>
   <dialog class="modal" id="workDialog"><form method="dialog" id="workForm" novalidate>
@@ -54,5 +54,5 @@
   <dialog class="modal modal--small" id="deleteDialog"><form method="dialog"><div class="modal__header"><h2>Excluir obra?</h2><button class="icon-button" value="cancel">×</button></div><div class="modal__body"><p id="deleteMessage"></p><div class="warning">As referências permanecerão bloqueadas e nunca poderão ser reutilizadas.</div></div><div class="modal__footer"><button class="button button--ghost" value="cancel">Cancelar</button><button class="button button--danger" id="confirmDelete" type="button">Excluir obra</button></div></form></dialog>
   <div class="toast-region" id="toastRegion" aria-live="polite"></div>
   </div>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script><script src="firebase-config.js"></script><script src="app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script><script src="firebase-config.js"></script><script src="app.js"></script><script src="pwa.js"></script>
 </body></html>

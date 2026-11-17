@@ -6,12 +6,14 @@ Aplicação web estática em JavaScript puro para consultar e administrar client
 
 - Acesso restrito aos usuários cadastrados no Firebase Authentication.
 - Pesquisa por referência, cliente ou obra.
+- Resultados em cards com todos os dados da obra e da referência visíveis.
 - Cadastro e edição de todos os dados da obra.
 - Uma ou mais referências alfabéticas de 2 ou 3 letras por obra.
 - Sugestão automática da próxima referência disponível.
 - Registro permanente: referências de obras finalizadas ou excluídas nunca são reutilizadas.
 - Exclusão lógica com preservação do histórico e da auditoria.
 - Interface responsiva pronta para Vercel.
+- PWA instalável em celulares e computadores, com cache somente dos arquivos da interface.
 
 ## Estrutura do banco
 
