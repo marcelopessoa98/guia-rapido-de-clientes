@@ -97,6 +97,21 @@
   font-weight: 400;
 }
 
+.reference-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  min-height: 34px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fafafa;
+}
+
+.reference-preview[hidden] {
+  display: none;
+}
+
 .observations {
   padding: 12px 14px;
   border-radius: 9px;

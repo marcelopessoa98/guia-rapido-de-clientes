@@ -94,6 +94,12 @@
     return escapeHtml(new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(timestamp)));
   }
 
+  function renderReferencePreview() {
+    const references = parseReferences($("references").value);
+    $("referencePreview").hidden = references.length === 0;
+    $("referencePreview").innerHTML = references.map((reference) => `<span class="reference">${escapeHtml(reference)}</span>`).join("");
+  }
+
   function render() {
     const query = normalize($("searchInput").value);
     const filter = $("statusFilter").value;
@@ -151,6 +157,7 @@
     $("clientName").value = work ? clientName(work.clienteId) : "";
     $("workName").value = work?.nome || "";
     $("references").value = work?.referencia || "";
+    renderReferencePreview();
     $("workBranch").value = work?.filial || "FORTALEZA";
     $("workActive").checked = work ? work.situacao === "ANDAMENTO" : true;
     $("workContact").value = work?.contatoCliente || "";
@@ -341,9 +348,13 @@
         const current = parseReferences($("references").value);
         current.push(nextReference(current));
         $("references").value = current.join(", ");
+        renderReferencePreview();
       } catch (error) { showFormError(error.message); }
     });
-    $("references").addEventListener("input", (event) => { event.target.value = event.target.value.toUpperCase().replace(/[^A-Z0-9,;\s-]/g, ""); });
+    $("references").addEventListener("input", (event) => {
+      event.target.value = event.target.value.toUpperCase().replace(/[^A-Z0-9,;\s-]/g, "");
+      renderReferencePreview();
+    });
   }
 
   bind();
