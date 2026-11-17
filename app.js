@@ -94,6 +94,35 @@
     return escapeHtml(new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(timestamp)));
   }
 
+  function branchName(value) {
+    if (value === "MARANHAO") return "Maranhão";
+    if (value === "FORTALEZA") return "Fortaleza";
+    return value;
+  }
+
+  function workDetails(work) {
+    const references = parseReferences(work.referencia);
+    const active = work.situacao === "ANDAMENTO";
+    return `<div class="details-modal__summary">
+      <div class="reference-list" aria-label="Referências">${references.map((ref) => `<span class="reference">${escapeHtml(ref)}</span>`).join("")}</div>
+      <span class="status ${active ? "" : "status--inactive"}">${active ? "Em andamento" : "Finalizada"}</span>
+    </div>
+    <dl class="details-modal__grid">
+      <div><dt>Cliente</dt><dd>${displayValue(clientName(work.clienteId))}</dd></div>
+      <div><dt>Obra</dt><dd>${displayValue(work.nome)}</dd></div>
+      <div><dt>Filial do cliente</dt><dd>${displayValue(branchName(work.filial))}</dd></div>
+      <div><dt>Contato do cliente</dt><dd>${displayValue(work.contatoCliente)}</dd></div>
+      <div class="detail-wide"><dt>Endereço</dt><dd>${displayValue(work.endereco)}</dd></div>
+      <div><dt>Funcionário fixo</dt><dd>${displayValue(work.funcionarioFixo)}</dd></div>
+      <div><dt>Tipo de laboratório</dt><dd>${displayValue(work.tipoLaboratorio)}</dd></div>
+      <div><dt>Tamanho do corpo de prova</dt><dd>${displayValue(work.tamanhoCp)}</dd></div>
+      <div><dt>Tipo de corpo de prova</dt><dd>${displayValue(work.tipoCp)}</dd></div>
+      <div><dt>ID da prensa</dt><dd>${displayValue(work.idPrensa)}</dd></div>
+      <div><dt>Última atualização</dt><dd>${formatDate(work.updatedAt)}</dd></div>
+      <div class="detail-wide"><dt>Observações</dt><dd class="observations">${displayValue(work.observacoes)}</dd></div>
+    </dl>`;
+  }
+
   function renderReferencePreview() {
     const references = parseReferences($("references").value);
     $("referencePreview").hidden = references.length === 0;
@@ -114,31 +143,14 @@
     $("resultsBody").innerHTML = visible.map((work) => {
       const references = parseReferences(work.referencia);
       const active = work.situacao === "ANDAMENTO";
-      const actions = state.profile?.role === "LEITOR" ? "" : `<div class="card-actions"><button class="row-button" data-edit="${work.id}">Editar</button><button class="row-button row-button--delete" data-delete="${work.id}">Excluir</button></div>`;
-      return `<article class="client-card">
-        <header class="client-card__header">
-          <div class="client-card__heading">
-            <div class="reference-list" aria-label="Referências">${references.map((ref) => `<span class="reference">${escapeHtml(ref)}</span>`).join("")}</div>
-            <span class="status ${active ? "" : "status--inactive"}">${active ? "Em andamento" : "Finalizada"}</span>
-          </div>
-          ${actions}
-        </header>
-        <div class="client-card__identity">
-          <div><span>Cliente</span><strong>${displayValue(clientName(work.clienteId))}</strong></div>
-          <div><span>Obra</span><strong>${displayValue(work.nome)}</strong></div>
-        </div>
-        <dl class="client-card__details">
-          <div><dt>Filial</dt><dd>${displayValue(work.filial === "MARANHAO" ? "Maranhão" : work.filial === "FORTALEZA" ? "Fortaleza" : work.filial)}</dd></div>
-          <div><dt>Contato do cliente</dt><dd>${displayValue(work.contatoCliente)}</dd></div>
-          <div class="detail-wide"><dt>Endereço</dt><dd>${displayValue(work.endereco)}</dd></div>
-          <div><dt>Funcionário fixo</dt><dd>${displayValue(work.funcionarioFixo)}</dd></div>
-          <div><dt>Tipo de laboratório</dt><dd>${displayValue(work.tipoLaboratorio)}</dd></div>
-          <div><dt>Tamanho do corpo de prova</dt><dd>${displayValue(work.tamanhoCp)}</dd></div>
-          <div><dt>Tipo de corpo de prova</dt><dd>${displayValue(work.tipoCp)}</dd></div>
-          <div><dt>ID da prensa</dt><dd>${displayValue(work.idPrensa)}</dd></div>
-          <div><dt>Última atualização</dt><dd>${formatDate(work.updatedAt)}</dd></div>
-          <div class="detail-wide"><dt>Observações</dt><dd class="observations">${displayValue(work.observacoes)}</dd></div>
-        </dl>
+      const actions = state.profile?.role === "LEITOR" ? "" : `<div class="list-actions"><button class="row-button" data-edit="${work.id}">Editar</button><button class="row-button row-button--delete" data-delete="${work.id}">Excluir</button></div>`;
+      return `<article class="client-row" data-view="${work.id}" tabindex="0" role="button" aria-label="Ver dados completos de ${escapeHtml(clientName(work.clienteId))}">
+        <div class="reference-list" aria-label="Referências">${references.map((ref) => `<span class="reference">${escapeHtml(ref)}</span>`).join("")}</div>
+        <strong class="client-row__client">${displayValue(clientName(work.clienteId))}</strong>
+        <span class="client-row__work">${displayValue(work.nome)}</span>
+        <span class="client-row__branch">${displayValue(branchName(work.filial))}</span>
+        <span class="status ${active ? "" : "status--inactive"}">${active ? "Em andamento" : "Finalizada"}</span>
+        ${actions}
       </article>`;
     }).join("");
     $("emptyState").hidden = visible.length > 0;
@@ -147,6 +159,14 @@
     $("activeCount").textContent = all.filter((work) => work.situacao === "ANDAMENTO").length;
     $("referenceCount").textContent = Object.keys(state.registry).length || new Set(all.flatMap((work) => parseReferences(work.referencia))).size;
     $("clientSuggestions").innerHTML = Object.values(state.clients).map((client) => client.nome).filter(Boolean).sort((a, b) => a.localeCompare(b, "pt-BR")).map((name) => `<option value="${escapeHtml(name)}"></option>`).join("");
+  }
+
+  function openDetails(id) {
+    const work = state.works[id];
+    if (!work) return;
+    $("detailsTitle").textContent = work.nome || "Detalhes da obra";
+    $("detailsContent").innerHTML = workDetails(work);
+    $("detailsDialog").showModal();
   }
 
   function openWork(id = null) {
@@ -340,8 +360,18 @@
     $("resultsBody").addEventListener("click", (event) => {
       const edit = event.target.closest("[data-edit]");
       const remove = event.target.closest("[data-delete]");
-      if (edit) openWork(edit.dataset.edit);
-      if (remove) askDelete(remove.dataset.delete);
+      if (edit) return openWork(edit.dataset.edit);
+      if (remove) return askDelete(remove.dataset.delete);
+      const view = event.target.closest("[data-view]");
+      if (view) openDetails(view.dataset.view);
+    });
+    $("resultsBody").addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      if (event.target.closest("button")) return;
+      const view = event.target.closest("[data-view]");
+      if (!view) return;
+      event.preventDefault();
+      openDetails(view.dataset.view);
     });
     $("suggestReference").addEventListener("click", () => {
       try {

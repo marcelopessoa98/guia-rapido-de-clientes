@@ -6,7 +6,7 @@ Aplicação web estática em JavaScript puro para consultar e administrar client
 
 - Acesso restrito aos usuários cadastrados no Firebase Authentication.
 - Pesquisa por referência, cliente ou obra.
-- Resultados em cards com todos os dados da obra e da referência visíveis.
+- Resultados em lista compacta, com os dados completos organizados em um modal.
 - Cadastro e edição de todos os dados da obra.
 - Uma ou mais referências alfabéticas de 2 ou 3 letras por obra.
 - Sugestão automática da próxima referência disponível.

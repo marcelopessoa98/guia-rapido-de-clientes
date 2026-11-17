@@ -28,7 +28,7 @@
     <section class="panel">
       <div class="toolbar"><label class="search"><svg viewBox="0 0 24 24"><path d="m21 21-4.35-4.35m2.35-5.65a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"/></svg><input id="searchInput" type="search" placeholder="Buscar por referência, cliente ou obra"></label><select id="statusFilter" aria-label="Filtrar situação"><option value="all">Todas as situações</option><option value="active">Somente ativas</option><option value="inactive">Somente inativas</option></select></div>
       <div class="result-summary" id="resultSummary">Carregando cadastros...</div>
-      <div class="client-cards" id="resultsBody" aria-live="polite"></div><div class="empty-state" id="emptyState" hidden><b>⌕</b><h2>Nenhum cadastro encontrado</h2><p>Ajuste a pesquisa ou cadastre uma nova obra.</p></div>
+      <div class="client-list__header" aria-hidden="true"><span>Referência</span><span>Cliente</span><span>Obra</span><span>Filial</span><span>Situação</span><span></span></div><div class="client-list" id="resultsBody" aria-live="polite"></div><div class="empty-state" id="emptyState" hidden><b>⌕</b><h2>Nenhum cadastro encontrado</h2><p>Ajuste a pesquisa ou cadastre uma nova obra.</p></div>
     </section>
   </main>
   <dialog class="modal" id="workDialog"><form method="dialog" id="workForm" novalidate>
@@ -37,7 +37,7 @@
       <label class="field"><span>Cliente</span><input id="clientName" list="clientSuggestions" maxlength="120" required placeholder="Nome do cliente"><datalist id="clientSuggestions"></datalist><small>Selecione um cliente existente ou informe um novo.</small></label>
       <label class="field"><span>Obra</span><input id="workName" maxlength="160" required placeholder="Nome ou localização da obra"></label>
       <div class="field"><div class="field__label"><span>Referências da obra</span><button class="text-button" id="suggestReference" type="button">Adicionar sugestão</button></div><input id="references" maxlength="80" required placeholder="Ex.: AB, AC, AD" spellcheck="false"><div class="reference-preview" id="referencePreview" hidden></div><small>Cadastre uma ou várias referências na mesma obra, separadas por vírgula. Clique novamente em “Adicionar sugestão” para incluir outra.</small></div>
-      <label class="field"><span>Filial</span><select id="workBranch"><option value="FORTALEZA">Fortaleza</option><option value="MARANHAO">Maranhão</option></select></label>
+      <label class="field"><span>Filial do cliente</span><select id="workBranch" required><option value="FORTALEZA">Fortaleza</option><option value="MARANHAO">Maranhão</option></select><small>Informe a filial responsável pelo atendimento deste cliente.</small></label>
       <label class="toggle-row"><span><strong>Obra em andamento</strong><small>Obras finalizadas continuam reservando suas referências.</small></span><input id="workActive" type="checkbox" checked></label>
       <details class="details-panel" open><summary>Informações complementares</summary><div class="details-grid">
         <label class="field"><span>Contato do cliente</span><input id="workContact" maxlength="300" placeholder="Nome e telefone"></label>
@@ -51,6 +51,7 @@
       </div></details><p class="form-error" id="formError" role="alert" hidden></p>
     </div><div class="modal__footer"><button class="button button--ghost" value="cancel">Cancelar</button><button class="button button--primary" id="saveButton" type="button">Salvar obra</button></div>
   </form></dialog>
+  <dialog class="modal modal--details" id="detailsDialog"><form method="dialog"><div class="modal__header"><div><p class="eyebrow">Dados completos</p><h2 id="detailsTitle">Detalhes da obra</h2></div><button class="icon-button" value="cancel" aria-label="Fechar">×</button></div><div class="modal__body details-modal__body" id="detailsContent"></div><div class="modal__footer"><button class="button button--primary" value="cancel">Fechar</button></div></form></dialog>
   <dialog class="modal modal--small" id="deleteDialog"><form method="dialog"><div class="modal__header"><h2>Excluir obra?</h2><button class="icon-button" value="cancel">×</button></div><div class="modal__body"><p id="deleteMessage"></p><div class="warning">As referências permanecerão bloqueadas e nunca poderão ser reutilizadas.</div></div><div class="modal__footer"><button class="button button--ghost" value="cancel">Cancelar</button><button class="button button--danger" id="confirmDelete" type="button">Excluir obra</button></div></form></dialog>
   <div class="toast-region" id="toastRegion" aria-live="polite"></div>
   </div>
