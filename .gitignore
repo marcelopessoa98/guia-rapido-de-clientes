@@ -1,0 +1,8 @@
+.vercel
+node_modules
+*.log
+source-clientes.xlsx
+seed-data.json
+import-report.json
+json
+references-registry.json

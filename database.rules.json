@@ -1,0 +1,58 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "usuarios": {
+      ".read": "auth != null && root.child('usuarios').child(auth.uid).child('ativo').val() === true && root.child('usuarios').child(auth.uid).child('role').val() === 'ADMIN'",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && root.child('usuarios').child(auth.uid).child('ativo').val() === true && root.child('usuarios').child(auth.uid).child('role').val() === 'ADMIN'",
+        ".validate": "newData.hasChildren(['nome','email','role','ativo']) && newData.child('nome').isString() && newData.child('nome').val().length >= 2 && newData.child('nome').val().length <= 150 && newData.child('email').isString() && newData.child('email').val().length <= 254 && (newData.child('role').val() === 'ADMIN' || newData.child('role').val() === 'EDITOR' || newData.child('role').val() === 'LEITOR') && newData.child('ativo').isBoolean()",
+        "nome": { ".validate": true },
+        "email": { ".validate": true },
+        "role": { ".validate": true },
+        "ativo": { ".validate": true },
+        "$other": { ".validate": false }
+      }
+    },
+    "clientes": {
+      ".read": "auth != null && root.child('usuarios').child(auth.uid).child('ativo').val() === true",
+      ".indexOn": ["nomeNormalizado", "updatedAt"],
+      "$id": {
+        ".write": "auth != null && root.child('usuarios').child(auth.uid).child('ativo').val() === true && (root.child('usuarios').child(auth.uid).child('role').val() === 'ADMIN' || root.child('usuarios').child(auth.uid).child('role').val() === 'EDITOR') && newData.exists()",
+        ".validate": "newData.hasChildren(['nome','nomeNormalizado','createdAt','createdBy','updatedAt','updatedBy']) && newData.child('nome').isString() && newData.child('nome').val().length >= 2 && newData.child('nome').val().length <= 150 && newData.child('nomeNormalizado').isString() && newData.child('createdAt').isNumber() && newData.child('createdBy').isString() && ((!data.exists() && newData.child('createdBy').val() === auth.uid) || (data.exists() && newData.child('createdBy').val() === data.child('createdBy').val() && newData.child('createdAt').val() === data.child('createdAt').val())) && newData.child('updatedAt').isNumber() && newData.child('updatedBy').val() === auth.uid",
+        "nome": { ".validate": true }, "nomeNormalizado": { ".validate": true }, "createdAt": { ".validate": true }, "createdBy": { ".validate": true }, "updatedAt": { ".validate": true }, "updatedBy": { ".validate": true },
+        "$other": { ".validate": false }
+      }
+    },
+    "obras": {
+      ".read": "auth != null && root.child('usuarios').child(auth.uid).child('ativo').val() === true",
+      ".indexOn": ["clienteId", "referenciaNormalizada", "filial", "situacao", "updatedAt"],
+      "$id": {
+        ".write": "auth != null && root.child('usuarios').child(auth.uid).child('ativo').val() === true && (root.child('usuarios').child(auth.uid).child('role').val() === 'ADMIN' || root.child('usuarios').child(auth.uid).child('role').val() === 'EDITOR') && newData.exists()",
+        ".validate": "newData.hasChildren(['clienteId','nome','nomeNormalizado','referencia','referenciaNormalizada','filial','situacao','createdAt','createdBy','updatedAt','updatedBy']) && newData.child('clienteId').isString() && newData.child('clienteId').val().length > 0 && root.child('clientes').child(newData.child('clienteId').val()).exists() && newData.child('nome').isString() && newData.child('nome').val().length >= 2 && newData.child('nome').val().length <= 180 && newData.child('nomeNormalizado').isString() && newData.child('referencia').isString() && newData.child('referencia').val().length > 0 && newData.child('referencia').val().length <= 80 && newData.child('referenciaNormalizada').isString() && (newData.child('filial').val() === 'FORTALEZA' || newData.child('filial').val() === 'MARANHAO') && (newData.child('situacao').val() === 'ANDAMENTO' || newData.child('situacao').val() === 'FINALIZADA') && newData.child('createdAt').isNumber() && newData.child('createdBy').isString() && ((!data.exists() && newData.child('createdBy').val() === auth.uid) || (data.exists() && newData.child('createdBy').val() === data.child('createdBy').val() && newData.child('createdAt').val() === data.child('createdAt').val())) && newData.child('updatedAt').isNumber() && newData.child('updatedBy').val() === auth.uid && (!newData.child('observacoes').exists() || (newData.child('observacoes').isString() && newData.child('observacoes').val().length <= 2000)) && (!newData.child('excluida').exists() || newData.child('excluida').isBoolean())",
+        "clienteId": { ".validate": true }, "nome": { ".validate": true }, "nomeNormalizado": { ".validate": true }, "referencia": { ".validate": true }, "referenciaNormalizada": { ".validate": true }, "tamanhoCp": { ".validate": true }, "tipoCp": { ".validate": true }, "contatoCliente": { ".validate": true }, "endereco": { ".validate": true }, "funcionarioFixo": { ".validate": true }, "tipoLaboratorio": { ".validate": true }, "idPrensa": { ".validate": true }, "observacoes": { ".validate": true }, "filial": { ".validate": true }, "situacao": { ".validate": true }, "excluida": { ".validate": true }, "createdAt": { ".validate": true }, "createdBy": { ".validate": true }, "updatedAt": { ".validate": true }, "updatedBy": { ".validate": true },
+        "$other": { ".validate": false }
+      }
+    },
+    "referencias": {
+      ".read": "auth != null && root.child('usuarios').child(auth.uid).child('ativo').val() === true",
+      "$ref": {
+        ".write": "auth != null && root.child('usuarios').child(auth.uid).child('ativo').val() === true && (root.child('usuarios').child(auth.uid).child('role').val() === 'ADMIN' || root.child('usuarios').child(auth.uid).child('role').val() === 'EDITOR') && newData.exists() && (!data.exists() || data.child('obraId').val() === newData.child('obraId').val())",
+        ".validate": "(data.exists() || $ref.matches(/^[A-Z]{2,3}$/)) && newData.hasChildren(['obraId','status','primeiraUtilizacaoEm','atualizadoEm']) && newData.child('obraId').isString() && (newData.child('status').val() === 'ATIVA' || newData.child('status').val() === 'RETIRADA') && newData.child('primeiraUtilizacaoEm').isNumber() && newData.child('atualizadoEm').isNumber()",
+        "obraId": { ".validate": true }, "status": { ".validate": true }, "primeiraUtilizacaoEm": { ".validate": true }, "atualizadoEm": { ".validate": true },
+        "$other": { ".validate": false }
+      }
+    },
+    "auditoria": {
+      ".read": "auth != null && root.child('usuarios').child(auth.uid).child('ativo').val() === true && root.child('usuarios').child(auth.uid).child('role').val() === 'ADMIN'",
+      ".indexOn": ["entidadeId", "timestamp", "usuarioId"],
+      "$id": {
+        ".write": "auth != null && !data.exists() && root.child('usuarios').child(auth.uid).child('ativo').val() === true && (root.child('usuarios').child(auth.uid).child('role').val() === 'ADMIN' || root.child('usuarios').child(auth.uid).child('role').val() === 'EDITOR')",
+        ".validate": "newData.hasChildren(['entidade','entidadeId','acao','usuarioId','usuarioEmail','timestamp']) && (newData.child('entidade').val() === 'CLIENTE' || newData.child('entidade').val() === 'OBRA' || newData.child('entidade').val() === 'USUARIO') && newData.child('entidadeId').isString() && (newData.child('acao').val() === 'CREATE' || newData.child('acao').val() === 'UPDATE' || newData.child('acao').val() === 'FINALIZE' || newData.child('acao').val() === 'REOPEN' || newData.child('acao').val() === 'DELETE' || newData.child('acao').val() === 'IMPORT') && newData.child('usuarioId').val() === auth.uid && newData.child('usuarioEmail').isString() && newData.child('timestamp').isNumber()",
+        "entidade": { ".validate": true }, "entidadeId": { ".validate": true }, "acao": { ".validate": true }, "usuarioId": { ".validate": true }, "usuarioEmail": { ".validate": true }, "timestamp": { ".validate": true }, "alteracoes": { ".validate": true },
+        "$other": { ".validate": false }
+      }
+    }
+  }
+}
